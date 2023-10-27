@@ -1,0 +1,15 @@
+*.vsconfig
+*.csproj
+*.sln
+*.vsidx
+.vs/GameFeel_beta/FileContentIndex/read.lock
+.vs/GameFeel_beta/v17/.suo
+.vs/GameFeel_beta/v17/fileList.bin
+Temp
+Library
+Logs
+obj
+output
+outputNoName
+UserSettings
+
