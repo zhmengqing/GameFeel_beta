@@ -5,6 +5,8 @@
 .vs/GameFeel_beta/FileContentIndex/read.lock
 .vs/GameFeel_beta/v17/.suo
 .vs/GameFeel_beta/v17/fileList.bin
+Assets/SceneDependencyCache
+Assets/SceneDependencyCache.meta
 Temp
 Library
 Logs
@@ -12,4 +14,5 @@ obj
 output
 outputNoName
 UserSettings
-
+ECS_Samples
+ECS_Samples.meta

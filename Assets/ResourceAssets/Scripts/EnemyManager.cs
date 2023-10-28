@@ -1,5 +1,11 @@
+using System;
 using System.Collections;
 using TMPro;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,6 +31,7 @@ public class EnemyManager : MonoBehaviour
 
     private bool _isSpeedUp;
 
+
     //当前的小怪数量
     private int _currentNum = 0;
     //所有小怪数量,包括已死
@@ -35,6 +42,8 @@ public class EnemyManager : MonoBehaviour
     private TextMeshProUGUI _liveTxt;
     private TextMeshProUGUI _deadTxt;
 
+    private int _dieNum = 0;
+
     private void Start()
     {
         _waitTime = Time.fixedTime;
@@ -44,6 +53,10 @@ public class EnemyManager : MonoBehaviour
 
         _liveTxt = _gameManager.uiManager.transform.Find("Board/LiveTxt").GetComponent<TextMeshProUGUI>();
         _deadTxt = _gameManager.uiManager.transform.Find("Board/DeadTxt").GetComponent<TextMeshProUGUI>();
+
+        //posArrCom = GetComponent<EnemyPosArr>();
+        //posArrCom.posVec = new Vector3[1100];
+
     }
 
     private void Update()
@@ -74,7 +87,7 @@ public class EnemyManager : MonoBehaviour
                     chicken.transform.position = born.transform.GetChild(i).gameObject.transform.position;
                     var nav = chicken.GetComponent<NavMeshAgent>();
 
-                    var random = Random.Range(1f, 5f);
+                    var random = UnityEngine.Random.Range(1f, 5f);
                     nav.speed = random;
                     nav.stoppingDistance = 4f;
                     var anim = chicken.GetComponent<Animator>();
@@ -148,6 +161,10 @@ public class EnemyManager : MonoBehaviour
                 bossNav.stoppingDistance = 3;
             }
         }
+
+
+        //ChickenArrayAuthoring chickenCom = World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentObject<ChickenArrayAuthoring>(GetEntity());
+        //Debug.Log(chickenCom.posArr.x + " " + chickenCom.posArr.y + " " + chickenCom.posArr.z);
     }
 
     public void Die(Transform chicken)
@@ -169,12 +186,22 @@ public class EnemyManager : MonoBehaviour
         var collider = chicken.GetComponent<Collider>();
         collider.enabled = false;
         chicken.transform.tag = "Die";
+        //posArrCom.posVec[_dieNum] = chicken.transform.position;
+
+        _dieNum++;
         AudioSource source = chicken.GetComponent<AudioSource>();
         source.enabled = true;
         source.loop = false;
         source.clip = screamClip;
         source.Play();
-        //StartCoroutine(DestroyEnemy(hit.transform));
+        StartCoroutine(DestroyEnemy(chicken));
+    }
+
+    private IEnumerator DestroyEnemy(Transform transform)
+    {
+        yield return new WaitForSeconds(5f);
+        Debug.Log("销毁 " + transform.position.ToString());
+        //Destroy(transform.gameObject);
     }
 
     public void BossHit()
