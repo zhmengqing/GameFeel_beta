@@ -18,19 +18,23 @@ namespace ChickenECS
             state.Enabled = false;
             var go = GameObject.Find("EnemyManager");
             var obj = go.GetComponent<EnemyPosObject>();
-
-            var enemyArrManaged = new EnemyArrManaged();
-            enemyArrManaged.posArr = obj.posArr;
+            var enemyArrManaged = new EnemyTransManaged();
+            enemyArrManaged.trans = obj.trans;
+            enemyArrManaged.triger = obj.triger;
+            enemyArrManaged.maxDieNum = obj.maxDieNum;
             var entity = state.EntityManager.CreateEntity();
             state.EntityManager.AddComponentData(entity, enemyArrManaged);
+            
         }
     }
 
-    public class EnemyArrManaged : IComponentData
+    public class EnemyTransManaged : IComponentData
     {
-        public Vector3[] posArr;
+        public TrigerObj triger;
+        public int maxDieNum;
+        public TransformObj trans;
         // Every IComponentData class must have a no-arg constructor.
-        public EnemyArrManaged()
+        public EnemyTransManaged()
         {
         }
     }

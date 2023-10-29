@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using Unity.Collections;
 using Unity.Entities;
@@ -8,6 +9,8 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.PlayerLoop;
+using UnityEngine.UIElements;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -31,9 +34,8 @@ public class EnemyManager : MonoBehaviour
 
     private bool _isSpeedUp;
 
-
     //当前的小怪数量
-    private int _currentNum = 0;
+    private int _currentNum;
     //所有小怪数量,包括已死
     private int _totalNum = 0;
     private float _waitTime;
@@ -41,8 +43,10 @@ public class EnemyManager : MonoBehaviour
     private GameObject _bossBlow;
     private TextMeshProUGUI _liveTxt;
     private TextMeshProUGUI _deadTxt;
+    private EnemyPosObject _enemyPos;
 
-    private int _dieNum = 0;
+    private List<GameObject> _enemyPool;
+    private List<GameObject> _enemyList;
 
     private void Start()
     {
@@ -54,9 +58,11 @@ public class EnemyManager : MonoBehaviour
         _liveTxt = _gameManager.uiManager.transform.Find("Board/LiveTxt").GetComponent<TextMeshProUGUI>();
         _deadTxt = _gameManager.uiManager.transform.Find("Board/DeadTxt").GetComponent<TextMeshProUGUI>();
 
-        //posArrCom = GetComponent<EnemyPosArr>();
-        //posArrCom.posVec = new Vector3[1100];
-
+        _enemyPos = GetComponent<EnemyPosObject>();
+        _enemyPos.triger = new TrigerObj();
+        _enemyPos.trans = new TransformObj();
+        _enemyPool = new List<GameObject>();
+        _enemyList = new List<GameObject>();
     }
 
     private void Update()
@@ -74,7 +80,9 @@ public class EnemyManager : MonoBehaviour
             }
             return;
         }
-            
+
+        _currentNum = _enemyList.Count;
+
         if (!_gameManager.IsBossShow && Time.fixedTime - _waitTime >= bornTime)
         {
             if (_currentNum < chickenCount)
@@ -82,25 +90,32 @@ public class EnemyManager : MonoBehaviour
                 var bornCount = born.transform.childCount;
                 for (int i = 0; i < bornCount; i++)
                 {
-                    var chicken = Instantiate(chickenPrefab).transform;
+                    var chicken = SpawnChicken().transform;
                     chicken.parent = transform;
                     chicken.transform.position = born.transform.GetChild(i).gameObject.transform.position;
                     var nav = chicken.GetComponent<NavMeshAgent>();
-
+                    nav.enabled = true;
                     var random = UnityEngine.Random.Range(1f, 5f);
                     nav.speed = random;
                     nav.stoppingDistance = 4f;
+
+                    var collider = chicken.GetComponent<Collider>();
+                    collider.enabled = true;
+
                     var anim = chicken.GetComponent<Animator>();
                     anim.SetInteger("MoveSpeed", (int)nav.speed);
-
                     
                     AudioSource source = chicken.GetComponent<AudioSource>();
                     source.enabled = true;
-                    source.loop = true;
                     if (_currentNum % 20 == 0)
                     {
+                        source.loop = true;
                         source.clip = talkClip;
                         source.Play();
+                    }
+                    else
+                    {
+                        source.Pause();
                     }
                     _totalNum++;
                 }
@@ -109,17 +124,13 @@ public class EnemyManager : MonoBehaviour
             _waitTime = Time.fixedTime;
         }
 
-
-        var totalCount = transform.childCount;
-        _currentNum = 0;
-        for (int i = 0; i < totalCount; i++) 
+        for (int i = 0; i < _currentNum; i++) 
         {
-            var chicken = transform.GetChild(i).gameObject;
+            var chicken = _enemyList[i].gameObject;
             if (chicken.CompareTag("Enemy"))
             {
                 AudioSource source = chicken.GetComponent<AudioSource>();
                 source.enabled = true;
-                _currentNum++;
                 var nav = chicken.GetComponent<NavMeshAgent>();
                 nav.enabled = true;
                 if (!_isSpeedUp && _totalNum > speedUpCount) 
@@ -178,17 +189,13 @@ public class EnemyManager : MonoBehaviour
             blowEff.transform.localPosition = Vector3.zero;
             blowEff.transform.localScale = Vector3.one * 0.5f;
         }
-
+        chicken.transform.tag = "Die";
         var anim = chicken.GetComponent<Animator>();
         anim.SetTrigger("Die");
         var nav = chicken.GetComponent<NavMeshAgent>();
         nav.enabled = false;
         var collider = chicken.GetComponent<Collider>();
         collider.enabled = false;
-        chicken.transform.tag = "Die";
-        //posArrCom.posVec[_dieNum] = chicken.transform.position;
-
-        _dieNum++;
         AudioSource source = chicken.GetComponent<AudioSource>();
         source.enabled = true;
         source.loop = false;
@@ -199,9 +206,35 @@ public class EnemyManager : MonoBehaviour
 
     private IEnumerator DestroyEnemy(Transform transform)
     {
-        yield return new WaitForSeconds(5f);
-        Debug.Log("销毁 " + transform.position.ToString());
+        yield return new WaitForSeconds(0.4f);
+
+        _enemyPos.trans.pos = transform.position;//_totalNum - _currentNum
+        _enemyPos.trans.rot = Quaternion.Euler(-95f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z); 
+        _enemyPos.triger.isTriger = true;
+
+        transform.gameObject.SetActive(false);
+        _enemyPool.Add(transform.gameObject);
+        _enemyList.Remove(transform.gameObject);
+        //Debug.Log("回收 " + transform.position.ToString());
         //Destroy(transform.gameObject);
+    }
+
+    private GameObject SpawnChicken()
+    {
+        GameObject spawner;
+        if (_enemyPool.Count > 0) 
+        {
+            spawner = _enemyPool[0];
+            _enemyPool.RemoveAt(0);
+        }
+        else
+        {
+            spawner = GameObject.Instantiate(chickenPrefab);
+        }
+        spawner.transform.tag = "Enemy";
+        spawner.SetActive(true);
+        _enemyList.Add(spawner);
+        return spawner;
     }
 
     public void BossHit()
@@ -213,12 +246,13 @@ public class EnemyManager : MonoBehaviour
 
     public void DestroyAllEnemys()
     {
-        var totalCount = transform.childCount;
-        for (int i = 0; i < totalCount; i++)
+        while (_enemyList.Count > 0) 
         {
-            Destroy(transform.GetChild(i).gameObject);
-        }
-            
+            _enemyList[0].SetActive(false);
+            _enemyList[0].transform.tag = "Die";
+            _enemyPool.Add(_enemyList[0]);
+            _enemyList.RemoveAt(0);
+        }            
 
     }
 
@@ -226,7 +260,6 @@ public class EnemyManager : MonoBehaviour
     {
         _waitTime = Time.fixedTime;
         _totalNum = 0;
-        _currentNum = 0;
     }
 
 }

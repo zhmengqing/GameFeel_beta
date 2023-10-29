@@ -4,5 +4,21 @@ using UnityEngine;
 
 public class EnemyPosObject : MonoBehaviour
 {
-    public Vector3[] posArr;
+    public int maxDieNum;
+    public TrigerObj triger;
+
+    [HideInInspector]
+    public TransformObj trans;
+}
+
+public class TrigerObj
+{
+    public bool isTriger;
+    public bool isDestroy;
+}
+
+public class TransformObj
+{
+    public Vector3 pos;
+    public Quaternion rot;
 }

@@ -72,6 +72,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3666473285653004023}
+  - component: {fileID: 3405275557578624193}
   m_Layer: 3
   m_Name: ChickenDie
   m_TagString: Enemy
@@ -96,6 +97,18 @@ Transform:
   - {fileID: 4637030200738265701}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -95, y: 160.23, z: 0}
+--- !u!114 &3405275557578624193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1449450086843675216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b90462db7e9dc247ad0538d754a7544, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1519512711378031473
 GameObject:
   m_ObjectHideFlags: 0
