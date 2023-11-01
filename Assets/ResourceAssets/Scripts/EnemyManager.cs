@@ -183,7 +183,13 @@ public class EnemyManager : MonoBehaviour
         //blow
         if(_gameManager.IsPowerup)
         {
-            var blowEff = Instantiate(blow);
+            GameObject blowEff;
+            blowEff = chicken.Find("Blow(Clone)")?.gameObject;
+            if (blowEff == null)
+            {
+                blowEff = Instantiate(blow);
+            }
+            
             blowEff.transform.parent = chicken;
             blowEff.SetActive(true);
             blowEff.transform.localPosition = Vector3.zero;
