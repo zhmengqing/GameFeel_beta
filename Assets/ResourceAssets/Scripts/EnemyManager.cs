@@ -212,7 +212,7 @@ public class EnemyManager : MonoBehaviour
 
     private IEnumerator DestroyEnemy(Transform transform, int delay)
     {
-        yield return new WaitForSeconds(1f + delay * 0.2f);
+        yield return new WaitForSeconds(1f + delay * 0.3f);
 
         _enemyPos.trans.pos = transform.position + transform.up * 0.35f + transform.forward * 0.1f;//_totalNum - _currentNum
         _enemyPos.trans.rot = Quaternion.Euler(-95f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z); 
