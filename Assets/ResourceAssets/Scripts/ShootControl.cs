@@ -33,6 +33,7 @@ public class ShootControl : MonoBehaviour
     private GameObject _particle;
     private GameObject _muzzleObj;
     private GameManager gameManager;
+    private float _camOffset;
 
 
     private void Start()
@@ -47,6 +48,8 @@ public class ShootControl : MonoBehaviour
 
         gameManager = GameObject.FindObjectOfType<GameManager>();
         gameManager.IsPause = true;
+
+        _camOffset = 0.05f;
     }
 
 
@@ -86,19 +89,24 @@ public class ShootControl : MonoBehaviour
             Physics.Raycast(camPosition, camForward, out hit, Mathf.Infinity);
             if (gameManager.IsPowerup)
             {
-                RaycastHit hitRight;
-                RaycastHit hitLeft;
-                RaycastHit hitUp;
-                RaycastHit hitDown;
-                Physics.Raycast(camPosition, camForward + camRight * 0.05f, out hitRight, Mathf.Infinity);
-                Physics.Raycast(camPosition, camForward - camRight * 0.05f, out hitLeft, Mathf.Infinity);
-                Physics.Raycast(camPosition, camForward + camUp * 0.05f, out hitUp, Mathf.Infinity);
-                Physics.Raycast(camPosition, camForward - camUp * 0.05f, out hitDown, Mathf.Infinity);
+                RaycastHit hitInfo;
+                Physics.Raycast(camPosition, camForward + camRight * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 1);
+                Physics.Raycast(camPosition, camForward - camRight * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 2);
+                Physics.Raycast(camPosition, camForward + camUp * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 3);
+                Physics.Raycast(camPosition, camForward - camUp * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 4);
+                Physics.Raycast(camPosition, camForward + (camUp + camRight) * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 5);
+                Physics.Raycast(camPosition, camForward + (camUp - camRight) * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 6);
+                Physics.Raycast(camPosition, camForward - (camUp - camRight) * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 7);
+                Physics.Raycast(camPosition, camForward - (camUp + camRight) * _camOffset, out hitInfo, Mathf.Infinity);
+                ShootHit(hitInfo, 8);
 
-                ShootHit(hitRight);
-                ShootHit(hitLeft);
-                ShootHit(hitUp);
-                ShootHit(hitDown);
             }
 
             ShootHit(hit);
@@ -119,7 +127,7 @@ public class ShootControl : MonoBehaviour
         gunSource.Play();
     }
 
-    private void ShootHit(RaycastHit hit)
+    private void ShootHit(RaycastHit hit, int delay = 0)
     {
         if (hit.collider != null)
         {
@@ -130,7 +138,7 @@ public class ShootControl : MonoBehaviour
 
             if (hit.collider.CompareTag("Enemy"))
             {
-                enemyManager.Die(hit.transform);
+                enemyManager.Die(hit.transform, delay);
             }
 
             if (hit.collider.CompareTag("Boss"))

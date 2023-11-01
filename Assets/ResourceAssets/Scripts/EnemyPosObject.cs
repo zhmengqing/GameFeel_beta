@@ -5,6 +5,8 @@ using UnityEngine;
 public class EnemyPosObject : MonoBehaviour
 {
     public int maxDieNum;
+
+    [HideInInspector]
     public TrigerObj triger;
 
     [HideInInspector]

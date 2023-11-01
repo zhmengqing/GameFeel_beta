@@ -21,7 +21,7 @@ public class EnemyManager : MonoBehaviour
     //总数多少只时boss出现,包括死亡
     public int bossChickenCount;
     //出生间隔
-    public int bornTime;
+    public float bornTime;
 
     public Transform hero;
 
@@ -178,7 +178,7 @@ public class EnemyManager : MonoBehaviour
         //Debug.Log(chickenCom.posArr.x + " " + chickenCom.posArr.y + " " + chickenCom.posArr.z);
     }
 
-    public void Die(Transform chicken)
+    public void Die(Transform chicken, int delay)
     {
         //blow
         if(_gameManager.IsPowerup)
@@ -207,17 +207,17 @@ public class EnemyManager : MonoBehaviour
         source.loop = false;
         source.clip = screamClip;
         source.Play();
-        StartCoroutine(DestroyEnemy(chicken));
+        StartCoroutine(DestroyEnemy(chicken, delay));
     }
 
-    private IEnumerator DestroyEnemy(Transform transform)
+    private IEnumerator DestroyEnemy(Transform transform, int delay)
     {
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(1f + delay * 0.2f);
 
-        _enemyPos.trans.pos = transform.position;//_totalNum - _currentNum
+        _enemyPos.trans.pos = transform.position + transform.up * 0.35f + transform.forward * 0.1f;//_totalNum - _currentNum
         _enemyPos.trans.rot = Quaternion.Euler(-95f, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z); 
         _enemyPos.triger.isTriger = true;
-
+        yield return new WaitForSeconds(0.1f);
         transform.gameObject.SetActive(false);
         _enemyPool.Add(transform.gameObject);
         _enemyList.Remove(transform.gameObject);

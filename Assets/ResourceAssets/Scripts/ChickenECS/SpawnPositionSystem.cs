@@ -28,15 +28,15 @@ namespace ChickenECS
                 return;
             }
             posManaged.triger.isTriger = false;
-            EntityQuery playerEntityQuery = state.EntityManager.CreateEntityQuery(typeof(ChickenPosComponent));
+            //EntityQuery playerEntityQuery = state.EntityManager.CreateEntityQuery(typeof(ChickenPosComponent));
 
             EntityCommandBuffer entityCommandBuf = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
 
             Entity entity = SystemAPI.GetSingleton<ChickenDieComponent>().prefab;
 
-            int spawnAmount = posManaged.maxDieNum;
-            if (playerEntityQuery.CalculateEntityCount() < spawnAmount)
+            //int spawnAmount = posManaged.maxDieNum;
+            //if (playerEntityQuery.CalculateEntityCount() < spawnAmount)
             {
                 Entity spawnedEntity = entityCommandBuf.Instantiate(entity);
                 entityCommandBuf.SetComponent(spawnedEntity, new ChickenPosComponent
