@@ -266,6 +266,13 @@ public class EnemyManager : MonoBehaviour
     {
         _waitTime = Time.fixedTime;
         _totalNum = 0;
+        //若不加这个，在死前打掉的怪生成的Entity会在重玩游戏时生成
+        StopAllCoroutines();
+        _enemyPos.triger.isDestroy = true;
+    }
+
+    public void EnemyEntitiesDestroy()
+    {
         _enemyPos.triger.isDestroy = true;
     }
 

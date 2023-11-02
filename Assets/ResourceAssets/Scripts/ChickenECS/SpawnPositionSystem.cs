@@ -8,28 +8,34 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace ChickenECS
 {
     public partial struct SpawnPositionSystem : ISystem
     {
-        EntityQuery playerEntityQuery;
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<ChickenDieComponent>();
 
-            playerEntityQuery = state.GetEntityQuery(ComponentType.ReadOnly<ChickenPosComponent>());
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            EntityCommandBuffer entityCommandBuf = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
             EnemyTransManaged posManaged = SystemAPI.ManagedAPI.GetSingleton<EnemyTransManaged>();
 
             if (posManaged.triger.isDestroy)
             {
-                entityCommandBuf.DestroyEntity(playerEntityQuery, EntityQueryCaptureMode.AtRecord);
+                EntityQueryDesc desc = new EntityQueryDesc()
+                {
+                    All = new ComponentType[] { ComponentType.ReadOnly<ChickenPosComponent>() },
+                };
+                EntityQuery query = state.EntityManager.CreateEntityQuery(desc);
+                NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.TempJob);
+                state.EntityManager.DestroyEntity(entityArray);
+                entityArray.Dispose();
+
                 posManaged.triger.isDestroy = false;
                 return;
             }
@@ -42,6 +48,7 @@ namespace ChickenECS
 
 
             Entity entity = SystemAPI.GetSingleton<ChickenDieComponent>().prefab;
+            EntityCommandBuffer entityCommandBuf = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
             //int spawnAmount = posManaged.maxDieNum;
             //if (playerEntityQuery.CalculateEntityCount() < spawnAmount)
@@ -54,6 +61,7 @@ namespace ChickenECS
                 });
             }
         }
+
     }
 
 }
