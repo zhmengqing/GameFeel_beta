@@ -96,10 +96,9 @@ public class ShootControl : MonoBehaviour
 
         }
 
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            enemyManager.EnemyPosSet();
-        }
+        //if(Input.GetKeyDown(KeyCode.P))
+        //{
+        //}
 
     }
 

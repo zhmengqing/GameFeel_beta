@@ -188,8 +188,8 @@ public class PlayerManager : MonoBehaviour
         gameManager.IsBossShow = false;
         _selfAnim.SetTrigger("Restart");
         Time.timeScale = 1;
-        enemyManager.DestroyAllEnemys();
-        enemyManager.ResetEnemey();
+        enemyManager.RepoolAllEnemies();
+        enemyManager.ResetEnemies();
         shoot.DestroyAllDecals();
         gameManager.boss.SetActive(false);
         gameManager.ResetStar();

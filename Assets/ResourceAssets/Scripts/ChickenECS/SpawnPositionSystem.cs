@@ -19,6 +19,7 @@ namespace ChickenECS
         {
             state.RequireForUpdate<ChickenDieComponent>();
 
+            playerEntityQuery = state.GetEntityQuery(typeof(ChickenPosComponent));
         }
 
         public void OnUpdate(ref SystemState state)
@@ -28,14 +29,7 @@ namespace ChickenECS
 
             if (posManaged.triger.isDestroy)
             {
-                //SystemAPI.Query <ChickenDieComponent> ().WithAll<Obstacle>() >
-
-
-                //playerEntityQuery = state.EntityManager.CreateEntityQuery(typeof(ChickenDieComponent));
-                //playerEntityQuery = state.GetEntityQuery(typeof(ChickenDieComponent));
-                //entityCommandBuf.DestroyEntity(playerEntityQuery, EntityQueryCaptureMode.AtRecord);
-                //state.EntityManager.DestroyEntity(playerEntityQuery);
-                //entityCommandBuf.RemoveComponent(playerEntityQuery, typeof(ChickenDieComponent), EntityQueryCaptureMode.AtRecord);
+                entityCommandBuf.DestroyEntity(playerEntityQuery, EntityQueryCaptureMode.AtRecord);
                 posManaged.triger.isDestroy = false;
                 return;
             }

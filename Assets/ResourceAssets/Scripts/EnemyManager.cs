@@ -48,10 +48,6 @@ public class EnemyManager : MonoBehaviour
     private List<GameObject> _enemyPool;
     private List<GameObject> _enemyList;
 
-    public void EnemyPosSet()
-    {
-        _enemyPos.triger.isDestroy = true;
-    }
 
     private void Start()
     {
@@ -255,7 +251,7 @@ public class EnemyManager : MonoBehaviour
         _bossBlow.SetActive(true);
     }
 
-    public void DestroyAllEnemys()
+    public void RepoolAllEnemies()
     {
         while (_enemyList.Count > 0) 
         {
@@ -263,11 +259,10 @@ public class EnemyManager : MonoBehaviour
             _enemyList[0].transform.tag = "Die";
             _enemyPool.Add(_enemyList[0]);
             _enemyList.RemoveAt(0);
-        }            
-
+        }
     }
 
-    public void ResetEnemey()
+    public void ResetEnemies()
     {
         _waitTime = Time.fixedTime;
         _totalNum = 0;
