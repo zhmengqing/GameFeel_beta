@@ -19,7 +19,7 @@ namespace ChickenECS
         {
             state.RequireForUpdate<ChickenDieComponent>();
 
-            playerEntityQuery = state.GetEntityQuery(typeof(ChickenPosComponent));
+            playerEntityQuery = state.GetEntityQuery(ComponentType.ReadOnly<ChickenPosComponent>());
         }
 
         public void OnUpdate(ref SystemState state)
