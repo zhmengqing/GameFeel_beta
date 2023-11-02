@@ -96,6 +96,11 @@ public class ShootControl : MonoBehaviour
 
         }
 
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            enemyManager.EnemyPosSet();
+        }
+
     }
 
     private void ShootRacast(Vector3 camPosition, Vector3 camForward, Vector3 camRight, Vector3 camUp, float camOffset, ref int delay)

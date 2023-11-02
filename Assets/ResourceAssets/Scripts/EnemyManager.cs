@@ -48,6 +48,11 @@ public class EnemyManager : MonoBehaviour
     private List<GameObject> _enemyPool;
     private List<GameObject> _enemyList;
 
+    public void EnemyPosSet()
+    {
+        _enemyPos.triger.isDestroy = true;
+    }
+
     private void Start()
     {
         _waitTime = Time.fixedTime;
@@ -266,6 +271,7 @@ public class EnemyManager : MonoBehaviour
     {
         _waitTime = Time.fixedTime;
         _totalNum = 0;
+        _enemyPos.triger.isDestroy = true;
     }
 
 }

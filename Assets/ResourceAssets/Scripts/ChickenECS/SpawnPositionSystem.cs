@@ -13,6 +13,7 @@ namespace ChickenECS
 {
     public partial struct SpawnPositionSystem : ISystem
     {
+        EntityQuery playerEntityQuery;
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
@@ -22,15 +23,28 @@ namespace ChickenECS
 
         public void OnUpdate(ref SystemState state)
         {
+            EntityCommandBuffer entityCommandBuf = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
             EnemyTransManaged posManaged = SystemAPI.ManagedAPI.GetSingleton<EnemyTransManaged>();
+
+            if (posManaged.triger.isDestroy)
+            {
+                //SystemAPI.Query <ChickenDieComponent> ().WithAll<Obstacle>() >
+
+
+                //playerEntityQuery = state.EntityManager.CreateEntityQuery(typeof(ChickenDieComponent));
+                //playerEntityQuery = state.GetEntityQuery(typeof(ChickenDieComponent));
+                //entityCommandBuf.DestroyEntity(playerEntityQuery, EntityQueryCaptureMode.AtRecord);
+                //state.EntityManager.DestroyEntity(playerEntityQuery);
+                //entityCommandBuf.RemoveComponent(playerEntityQuery, typeof(ChickenDieComponent), EntityQueryCaptureMode.AtRecord);
+                posManaged.triger.isDestroy = false;
+                return;
+            }
+
             if (!posManaged.triger.isTriger)
             {
                 return;
             }
             posManaged.triger.isTriger = false;
-            //EntityQuery playerEntityQuery = state.EntityManager.CreateEntityQuery(typeof(ChickenPosComponent));
-
-            EntityCommandBuffer entityCommandBuf = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
 
             Entity entity = SystemAPI.GetSingleton<ChickenDieComponent>().prefab;
